@@ -1,9 +1,3 @@
-/* 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY5ODY1Mzk5NCwiZXhwIjoxNjk4NzQwMzk0fQ.qfArxget87Sn96T3qfhApoPgGgw67lsIIls5i7X_yJk";
-
-faire une requete POST avec email et mdp
-+ creer message d'erreur si erreur */
-
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector(".form-contact");
 
@@ -41,17 +35,50 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Une erreur s'est produite :", error);
       });
   });
-});
 
-function validateForm() {
-  var name = document.getElementById("name").value;
-  var email = document.getElementById("email").value;
-  var message = document.getElementById("message").value;
+  function validateForm() {
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var message = document.getElementById("message").value;
 
-  if (name === "" || email === "" || message === "") {
-    alert("Veuillez remplir tous les champs obligatoires.");
-    return false; // Empêche la soumission du formulaire
+    if (name === "" || email === "" || message === "") {
+      alert("Veuillez remplir tous les champs obligatoires.");
+      return false; // Empêche la soumission du formulaire
+    }
+
+    return true; // Permet la soumission du formulaire
   }
 
-  return true; // Permet la soumission du formulaire
-}
+  function checkUserLoggedIn() {
+    // Récupérer l'élément à afficher ou masquer
+    const blackContainer = document.querySelector(".black-container");
+
+    // Récupérer le lien de connexion dans le menu
+    const loginLink = document.querySelector(
+      "nav ul li a[href='loginpage.html']"
+    );
+
+    // Vérifier si l'utilisateur est connecté
+    const userToken = localStorage.getItem("userToken");
+    if (userToken) {
+      // Utilisateur connecté, afficher l'élément
+      blackContainer.style.display = "block";
+
+      // Modifier le texte du lien de connexion en "logout"
+      if (loginLink) {
+        loginLink.textContent = "logout";
+      }
+    } else {
+      // Utilisateur non connecté, masquer l'élément
+      blackContainer.style.display = "none";
+
+      // Rétablir le texte du lien de connexion en "login"
+      if (loginLink) {
+        loginLink.textContent = "login";
+      }
+    }
+  }
+
+  // Appeler la fonction de vérification à chaque chargement de page
+  checkUserLoggedIn();
+});

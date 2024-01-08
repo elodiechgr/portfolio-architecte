@@ -48,11 +48,18 @@ table {
 }
 /** end reset css**/
 body {
+
+	font-family: 'Work Sans' ;
+	font-size: 14px;
+}
+
+.main-container{
 	max-width: 1140px;
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
+
 header {
 	display: flex;
 	justify-content: space-between;
@@ -601,3 +608,31 @@ li, ul {
 footer {
     margin-top: auto;
 }
+
+li.ml {
+	margin-top: 80px;
+}
+
+/* Barre login */
+
+.black-container {
+	display: none;
+  }
+
+  .black-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 59px;
+	background-color: black;
+  }
+  
+  .text-header {
+	color: white;
+	font-family: 'Work Sans', sans-serif;
+	font-weight: 400;
+	font-size: 16px;
+	margin-left: 10px;
+  }
+  

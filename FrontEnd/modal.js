@@ -34,6 +34,11 @@ fetch("http://localhost:5678/api/works")
 const openModal = function (e) {
   e.preventDefault();
   modal = document.querySelector(e.target.getAttribute("href"));
+
+  // Réinitialiser la modal au "step 1"
+  document.querySelector(".step1").style.display = "block";
+  document.querySelector(".step2").style.display = "none";
+
   focusables = Array.from(modal.querySelectorAll(focusableSelector));
   modal.style.display = null;
   modal.removeAttribute("aria-hidden");
@@ -43,14 +48,17 @@ const openModal = function (e) {
   modal
     .querySelector(".js-modal-stop")
     .addEventListener("click", stopPropagation);
+
+  updateModal();
 };
 
 const closeModal = function (e) {
   if (modal === null) return;
-  e.preventDefault();
-  modal.style.display = "none";
-  modal.setAttribute("aria-hidden", "true");
-  modal.removeAttribute("aria-modal");
+  if (e) {
+    e.preventDefault();
+  }
+
+  // Supprimer les écouteurs d'événements
   modal.removeEventListener("click", closeModal);
   modal
     .querySelector(".js-close-modal")
@@ -58,6 +66,12 @@ const closeModal = function (e) {
   modal
     .querySelector(".js-modal-stop")
     .removeEventListener("click", stopPropagation);
+
+  modal.style.display = "none";
+  modal.setAttribute("aria-hidden", "true");
+  modal.removeAttribute("aria-modal");
+
+  // Affecter null à modal après avoir fermé la modale
   modal = null;
 };
 
@@ -96,8 +110,38 @@ addPhotoButton.addEventListener("click", () => {
   document.querySelector(".step2").style.display = "block";
 });
 
-// Icon trash + suppression photo
+function updateHomeGallery() {
+  const homeGallery = document.querySelector(".gallery");
 
+  fetch("http://localhost:5678/api/works")
+    .then((response) => response.json())
+    .then((works) => {
+      homeGallery.innerHTML = "";
+
+      for (const work of works) {
+        const figure = document.createElement("figure");
+        const image = document.createElement("img");
+        image.src = work.imageUrl;
+        image.alt = work.title;
+        const figcaption = document.createElement("figcaption");
+        figcaption.textContent = work.title;
+
+        figure.appendChild(image);
+        figure.appendChild(figcaption);
+
+        homeGallery.appendChild(figure);
+        figure.dataset.category = work.category.name;
+      }
+    })
+    .catch((error) =>
+      console.error(
+        "Erreur lors de la mise à jour de la galerie sur la page d'accueil :",
+        error
+      )
+    );
+}
+
+// Icon trash + suppression photo
 const deletePhoto = (id) => {
   fetch(`http://localhost:5678/api/works/${id}`, {
     method: "DELETE",
@@ -110,18 +154,56 @@ const deletePhoto = (id) => {
       if (!response.ok) {
         throw new Error("Erreur lors de la suppression de la photo");
       }
-      return response.json();
+      return response.text();
     })
     .then(() => {
-      // Supprimer l'élément de la galerie modal
       const deletedElement = projectsContainerModal.querySelector(
         `[data-id="${id}"]`
       );
       if (deletedElement) {
         deletedElement.remove();
+        updateFocusables();
       }
+
+      // Mise à jour de la galerie sur la page d'accueil
+      updateHomeGallery();
+
+      // Mise à jour de la modale
+      updateModal();
+
+      closeModal();
     })
     .catch((error) => console.error(error));
+};
+
+// Appel la fonction pour mettre à jour la modale
+function updateModal() {
+  fetch("http://localhost:5678/api/works")
+    .then((response) => response.json())
+    .then((works) => {
+      projectsContainerModal.innerHTML = ""; // Efface le contenu actuel de la modale
+
+      for (const work of works) {
+        const liElement = document.createElement("div");
+        liElement.innerHTML = `
+          <div class="gallery-item">
+            <img src="${work.imageUrl}" alt="Image">
+            <i class="fa-solid fa-trash-can delete-icon" style="color: #ffffff;" data-id="${work.id}"></i>
+          </div>
+        `;
+        projectsContainerModal.appendChild(liElement);
+
+        const deleteIcon = liElement.querySelector(".delete-icon");
+        deleteIcon.addEventListener("click", () => deletePhoto(work.id));
+      }
+    })
+    .catch((error) =>
+      console.error("Erreur lors de la mise à jour de la modale :", error)
+    );
+}
+
+const updateFocusables = function () {
+  focusables = Array.from(modal.querySelectorAll(focusableSelector));
 };
 
 // Envoi travaux
@@ -133,6 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const projectCategorySelect = document.getElementById("project-category");
 
   // Fonction de validation du formulaire
+
   const validateForm = () => {
     const isPhotoSelected = projectPhotoInput.files.length > 0;
     const isTitleFilled = projectTitleInput.value.trim() !== "";
@@ -171,9 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const projectData = new FormData();
 
     projectData.append("image", projectPhoto); //(ajout de la photo du projet dans FormData)
-
     projectData.append("title", projectTitle); //(ajout du titre du projet dans FormData)
-
     projectData.append("category", projectCategory); //(ajout de la catégorie du projet dans FormData)
 
     fetch("http://localhost:5678/api/works", {
@@ -193,9 +274,29 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log("Projet ajouté avec succès :", data);
-        // Réinitialiser le formulaire ou effectuer d'autres actions après l'ajout du projet
-        // form.reset();
+        // Fermer la modal après l'envoi réussi
+        closeModal();
+
+        // Ajouter la nouvelle photo à la galerie sans recharger la page
+        const gallery = document.querySelector(".gallery");
+        const figure = document.createElement("figure");
+        const image = document.createElement("img");
+        image.src = data.imageUrl; // Assurez-vous que data contient l'URL de la nouvelle image
+        image.alt = data.title;
+        const figcaption = document.createElement("figcaption");
+        figcaption.textContent = data.title;
+
+        // Ajouter l'image et la légende à la figure
+        figure.appendChild(image);
+        figure.appendChild(figcaption);
+
+        // Ajouter la figure à la galerie
+        gallery.appendChild(figure);
+
+        // Ajouter la catégorie en tant qu'attribut de données à la figure
+        figure.dataset.category = data.category.name;
       })
+
       .catch((error) => {
         console.error("Erreur lors de l'ajout du projet :", error);
         // Gérer l'erreur en conséquence (afficher un message à l'utilisateur, etc.)

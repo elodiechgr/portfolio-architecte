@@ -13,8 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
         image.alt = work.title;
         const figcaption = document.createElement("figcaption");
         figcaption.textContent = work.title;
-        /*const id = document.createElement("categoryId");
-              categoryId.category = work.categoryId;*/
 
         // Ajoutez l'image et la légende à la figure
         figure.appendChild(image);
@@ -27,10 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         figure.dataset.category = work.category.name;
 
         // Code pour gérer la logique filtres
-        const allCategory =
-          document.getElementById(
-            "all"
-          ); /* Pas d'id pour ça mais réunir les 3 autres */
+        const allCategory = document.getElementById("all");
         const objetsCategory = document.getElementById("Objets");
         const appartementsCategory = document.getElementById("Appartements");
         const hotelsCategory = document.getElementById("Hotels & restaurants");

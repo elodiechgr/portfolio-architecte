@@ -67,6 +67,12 @@ document.addEventListener("DOMContentLoaded", function () {
       // Modifier le texte du lien de connexion en "logout"
       if (loginLink) {
         loginLink.textContent = "logout";
+        // Ajouter un gestionnaire d'événements au lien "logout"
+        loginLink.addEventListener("click", function (event) {
+          event.preventDefault(); // Empêcher la propagation de l'événement
+          logoutUser();
+          // Vous pouvez également rediriger l'utilisateur ici s'il le faut
+        });
       }
     } else {
       // Utilisateur non connecté, masquer l'élément
@@ -82,3 +88,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Appeler la fonction de vérification à chaque chargement de page
   checkUserLoggedIn();
 });
+
+function logoutUser() {
+  // Effacer le token utilisateur du local storage
+  localStorage.removeItem("userToken");
+
+  // Rediriger l'utilisateur vers la page d'accueil
+  window.location.href = "index.html";
+}

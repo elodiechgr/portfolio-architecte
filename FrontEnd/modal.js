@@ -27,8 +27,6 @@ fetch("http://localhost:5678/api/works")
       const deleteIcon = liElement.querySelector(".delete-icon");
       deleteIcon.addEventListener("click", () => deletePhoto(work.id));
     }
-
-    //getCategories();
   });
 
 const openModal = function (e) {
@@ -245,17 +243,17 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault();
 
     const userToken = localStorage.getItem("userToken");
-    const projectTitle = document.getElementById("project-title").value; //(récupération du titre du projet)
-    const projectPhoto = document.getElementById("project-photo").files[0]; //(récupération de la photo du projet)
+    const projectTitle = document.getElementById("project-title").value;
+    const projectPhoto = document.getElementById("project-photo").files[0];
     const projectCategory = parseInt(
       document.getElementById("project-category").value
-    ); //(récupération de la catégorie du projet : on convertit l'id en int c'est à dire en nombre)
+    );
 
     const projectData = new FormData();
 
-    projectData.append("image", projectPhoto); //(ajout de la photo du projet dans FormData)
-    projectData.append("title", projectTitle); //(ajout du titre du projet dans FormData)
-    projectData.append("category", projectCategory); //(ajout de la catégorie du projet dans FormData)
+    projectData.append("image", projectPhoto);
+    projectData.append("title", projectTitle);
+    projectData.append("category", projectCategory);
 
     fetch("http://localhost:5678/api/works", {
       method: "POST",
@@ -281,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const gallery = document.querySelector(".gallery");
         const figure = document.createElement("figure");
         const image = document.createElement("img");
-        image.src = data.imageUrl; // Assurez-vous que data contient l'URL de la nouvelle image
+        image.src = data.imageUrl;
         image.alt = data.title;
         const figcaption = document.createElement("figcaption");
         figcaption.textContent = data.title;
@@ -299,7 +297,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       .catch((error) => {
         console.error("Erreur lors de l'ajout du projet :", error);
-        // Gérer l'erreur en conséquence (afficher un message à l'utilisateur, etc.)
       });
   });
 });

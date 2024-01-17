@@ -43,17 +43,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (name === "" || email === "" || message === "") {
       alert("Veuillez remplir tous les champs obligatoires.");
-      return false; // Empêche la soumission du formulaire
+      return false;
     }
 
-    return true; // Permet la soumission du formulaire
+    return true;
   }
 
   function checkUserLoggedIn() {
-    // Récupérer l'élément à afficher ou masquer
     const blackContainer = document.querySelector(".black-container");
 
-    // Récupérer le lien de connexion dans le menu
     const loginLink = document.querySelector(
       "nav ul li a[href='loginpage.html']"
     );
@@ -61,24 +59,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Vérifier si l'utilisateur est connecté
     const userToken = localStorage.getItem("userToken");
     if (userToken) {
-      // Utilisateur connecté, afficher l'élément
       blackContainer.style.display = "block";
 
-      // Modifier le texte du lien de connexion en "logout"
       if (loginLink) {
         loginLink.textContent = "logout";
-        // Ajouter un gestionnaire d'événements au lien "logout"
         loginLink.addEventListener("click", function (event) {
           event.preventDefault(); // Empêcher la propagation de l'événement
           logoutUser();
-          // Vous pouvez également rediriger l'utilisateur ici s'il le faut
         });
       }
     } else {
-      // Utilisateur non connecté, masquer l'élément
       blackContainer.style.display = "none";
 
-      // Rétablir le texte du lien de connexion en "login"
       if (loginLink) {
         loginLink.textContent = "login";
       }
@@ -90,9 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function logoutUser() {
-  // Effacer le token utilisateur du local storage
   localStorage.removeItem("userToken");
 
-  // Rediriger l'utilisateur vers la page d'accueil
   window.location.href = "index.html";
 }

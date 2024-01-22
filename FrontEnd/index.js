@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       data.forEach((work) => {
         const figure = document.createElement("figure");
         const image = document.createElement("img");
@@ -72,28 +71,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
     .catch((error) =>
       console.error("Erreur de récupération des données : ", error)
-    );
-
-  fetch("http://localhost:5678/api/categories")
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      data.forEach((category) => {
-        const categoryElement = document.createElement("button");
-        categoryElement.textContent = category.name;
-
-        if (category.name === "all") {
-          allCategory.appendChild(categoryElement);
-        } else if (category.name === "Objets") {
-          objetsCategory.appendChild(categoryElement);
-        } else if (category.name === "Appartements") {
-          appartementsCategory.appendChild(categoryElement);
-        } else if (category.name === "Hotels & restaurants") {
-          hotelsCategory.appendChild(categoryElement);
-        }
-      });
-    })
-    .catch((error) =>
-      console.error("Erreur de récupération des catégories : ", error)
     );
 });

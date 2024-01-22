@@ -14,7 +14,6 @@ fetch("http://localhost:5678/api/works")
     return response.json();
   })
   .then((works) => {
-    console.log(works);
     for (const work of works) {
       const liElement = document.createElement("div");
       liElement.innerHTML = `

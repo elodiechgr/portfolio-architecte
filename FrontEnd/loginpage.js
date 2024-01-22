@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.userId) {
           localStorage.setItem("userToken", data.token);
           window.location.href = "index.html";
@@ -35,19 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Une erreur s'est produite :", error);
       });
   });
-
-  function validateForm() {
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var message = document.getElementById("message").value;
-
-    if (name === "" || email === "" || message === "") {
-      alert("Veuillez remplir tous les champs obligatoires.");
-      return false;
-    }
-
-    return true;
-  }
 
   function checkUserLoggedIn() {
     const blackContainer = document.querySelector(".black-container");

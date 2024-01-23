@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         if (data.userId) {
           localStorage.setItem("userToken", data.token);
           window.location.href = "index.html";

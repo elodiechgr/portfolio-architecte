@@ -28,6 +28,23 @@ fetch("http://localhost:5678/api/works")
     }
   });
 
+function resetForm() {
+  document.getElementById("project-photo").value = "";
+  document.getElementById("project-title").value = "";
+  document.getElementById("project-category").value = "";
+  document.getElementById("preview").src = "";
+  document.getElementById("imagePreview").classList.add("hidden");
+  document.querySelector(".fa-regular.fa-image").style.display = "block";
+  document.getElementById("imageForm").style.display = "block";
+  document.querySelector(".text-ajouter").style.display = "block";
+}
+
+const reverseModal = function (e) {
+  e.preventDefault();
+  document.querySelector(".step2").style.display = "none";
+  document.querySelector(".step1").style.display = "block";
+};
+
 const openModal = function (e) {
   e.preventDefault();
   modal = document.querySelector(e.target.getAttribute("href"));
@@ -36,12 +53,19 @@ const openModal = function (e) {
   document.querySelector(".step1").style.display = "block";
   document.querySelector(".step2").style.display = "none";
 
+  resetForm();
+
   focusables = Array.from(modal.querySelectorAll(focusableSelector));
   modal.style.display = null;
   modal.removeAttribute("aria-hidden");
   modal.setAttribute("aria-modal", "true");
   modal.addEventListener("click", closeModal);
   modal.querySelector(".js-close-modal").addEventListener("click", closeModal);
+
+  modal
+    .querySelector(".js-reverse-modal")
+    .addEventListener("click", reverseModal);
+
   modal
     .querySelector(".js-modal-stop")
     .addEventListener("click", stopPropagation);
@@ -138,6 +162,37 @@ function updateHomeGallery() {
     );
 }
 
+// Appel la fonction pour mettre à jour la modale
+function updateModal() {
+  fetch("http://localhost:5678/api/works")
+    .then((response) => response.json())
+    .then((works) => {
+      projectsContainerModal.innerHTML = ""; // Efface le contenu actuel de la modale
+
+      for (const work of works) {
+        const liElement = document.createElement("div");
+        liElement.innerHTML = `
+          <div class="gallery-item">
+            <img src="${work.imageUrl}" alt="Image">
+            <i class="fa-solid fa-trash-can delete-icon" style="color: #ffffff;" data-id="${work.id}"></i>
+          </div>
+        `;
+        projectsContainerModal.appendChild(liElement);
+
+        const deleteIcon = liElement.querySelector(".delete-icon");
+        deleteIcon.addEventListener("click", () => deletePhoto(work.id));
+      }
+
+      // Si la modale est ouverte, mettez à jour le focus
+      if (modal !== null) {
+        updateFocusables();
+      }
+    })
+    .catch((error) =>
+      console.error("Erreur lors de la mise à jour de la modale :", error)
+    );
+}
+
 // Icon trash + suppression photo
 const deletePhoto = (id) => {
   fetch(`http://localhost:5678/api/works/${id}`, {
@@ -168,36 +223,11 @@ const deletePhoto = (id) => {
       // Mise à jour de la modale
       updateModal();
 
-      closeModal();
+      // Réinitialiser le formulaire
+      resetForm();
     })
     .catch((error) => console.error(error));
 };
-
-// Appel la fonction pour mettre à jour la modale
-function updateModal() {
-  fetch("http://localhost:5678/api/works")
-    .then((response) => response.json())
-    .then((works) => {
-      projectsContainerModal.innerHTML = ""; // Efface le contenu actuel de la modale
-
-      for (const work of works) {
-        const liElement = document.createElement("div");
-        liElement.innerHTML = `
-          <div class="gallery-item">
-            <img src="${work.imageUrl}" alt="Image">
-            <i class="fa-solid fa-trash-can delete-icon" style="color: #ffffff;" data-id="${work.id}"></i>
-          </div>
-        `;
-        projectsContainerModal.appendChild(liElement);
-
-        const deleteIcon = liElement.querySelector(".delete-icon");
-        deleteIcon.addEventListener("click", () => deletePhoto(work.id));
-      }
-    })
-    .catch((error) =>
-      console.error("Erreur lors de la mise à jour de la modale :", error)
-    );
-}
 
 const updateFocusables = function () {
   focusables = Array.from(modal.querySelectorAll(focusableSelector));
